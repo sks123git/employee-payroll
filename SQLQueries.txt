@@ -199,4 +199,48 @@ mysql> DESCRIBE employee_payroll;
 | address        | varchar(40)  | YES  |     | India   |                |
 +----------------+--------------+------+-----+---------+----------------+
 
-10. 
+10. Ability to make name as part of development and Marketing Department
+
+mysql> CREATE TABLE department (dept_id int PRIMARY KEY, department varchar(40));
+Query OK, 0 rows affected (0.29 sec)
+
+mysql> INSERT INTO department(dept_id,department) values (1,'development'),(2,'marketing');
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from department;
++---------+-------------+
+| dept_id | department  |
++---------+-------------+
+|       1 | development |
+|       2 | marketing   |
++---------+-------------+
+
+11. For Many to Many relationship, create new Table called Employee Department having Employee Id and 
+Department ID and redo the UC 7
+
+mysql> CREATE TABLE employee_department(emp_id int NOT NULL, dept_id int NOT NULL, FOREIGN KEY(emp_id) REFERENCES employee_payroll(id), FOREIGN KEY(dept_id) REFERENCES department(dept_id));
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> INSERT INTO employee_department(emp_id,dept_id) values (1,1),(1,2);
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee_department;
++--------+---------+
+| emp_id | dept_id |
++--------+---------+
+|      1 |       1 |
+|      1 |       2 |
++--------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select employee_payroll.id,employee_payroll.name,department.dept_id,department.department FROM employee_payroll JOIN employee_department ON (employee_department.emp_id = employee_payroll.id)
+    -> JOIN department ON (department.dept_id = employee_department.dept_id);
++----+---------+---------+-------------+
+| id | name    | dept_id | department  |
++----+---------+---------+-------------+
+|  1 | shubham |       1 | development |
+|  1 | shubham |       2 | marketing   |
++----+---------+---------+-------------+
+2 rows in set (0.01 sec)
